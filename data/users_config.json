@@ -1,0 +1,58 @@
+{
+  "users": {
+    "이치형": {
+      "role": "소장",
+      "department": "연구소",
+      "view_scope": "all",
+      "can_delete": true
+    },
+    "이재원": {
+      "role": "차장",
+      "department": "연구소",
+      "view_scope": "all",
+      "can_delete": true
+    },
+    "김일록": {
+      "role": "차장",
+      "department": "연구소",
+      "view_scope": "all",
+      "can_delete": true
+    },
+    "최준영": {
+      "role": "과장",
+      "department": "연구소",
+      "view_scope": "all",
+      "can_delete": false
+    },
+    "홍연석": {
+      "role": "과장",
+      "department": "연구소",
+      "view_scope": "all",
+      "can_delete": false
+    },
+    "허근우": {
+      "role": "사원",
+      "department": "연구소",
+      "view_scope": "self",
+      "can_delete": false
+    },
+    "김진석": {
+      "role": "주임",
+      "department": "연구소",
+      "view_scope": "self",
+      "can_delete": false
+    }
+  },
+  "roles_hierarchy": {
+    "소장": 5,
+    "차장": 4,
+    "과장": 3,
+    "주임": 2,
+    "사원": 1
+  },
+  "view_scope_options": {
+    "all": "전체 연구원의 보고서 열람 가능",
+    "self": "본인 보고서만 열람 가능",
+    "list": "지정된 연구원의 보고서만 열람 가능 (배열로 이름 목록 지정)"
+  }
+}

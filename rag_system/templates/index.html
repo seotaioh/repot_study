@@ -25,6 +25,31 @@
             font-size: 13px;
             opacity: 0.9;
         }
+        .header-right {
+            text-align: right;
+        }
+        .user-info {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        .user-info .user-name { font-weight: 700; }
+        .user-info .user-role {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-left: 6px;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -51,6 +76,10 @@
             background: #1a73e8;
             color: white;
         }
+        .tab:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
         .panel {
             display: none;
             background: white;
@@ -59,6 +88,68 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         .panel.active { display: block; }
+
+        /* 로그인 */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .login-box {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            width: 400px;
+            max-width: 90vw;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .login-box h2 {
+            color: #1a73e8;
+            margin-bottom: 8px;
+            font-size: 22px;
+        }
+        .login-box .login-subtitle {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+        .login-box select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 16px;
+            appearance: none;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E") no-repeat right 12px center;
+        }
+        .login-box .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .login-box .login-btn:hover { background: #1557b0; }
+        .login-box .login-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .scope-info {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #888;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: none;
+        }
 
         /* 업로드 영역 */
         .upload-zone {
@@ -83,14 +174,15 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        .upload-form input[type="text"] {
+        .upload-form input[type="file"] { display: none; }
+        .uploader-name {
+            background: #e8f0fe;
+            color: #1a73e8;
             padding: 8px 16px;
-            border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
-            width: 200px;
+            font-weight: 600;
         }
-        .upload-form input[type="file"] { display: none; }
         .btn {
             padding: 8px 20px;
             border: none;
@@ -104,6 +196,8 @@
         .btn-primary:hover { background: #1557b0; }
         .btn-secondary { background: #e8e8e8; color: #333; }
         .btn-danger { background: #ea4335; color: white; }
+        .btn-danger:hover { background: #c62828; }
+        .btn-small { padding: 4px 12px; font-size: 12px; }
 
         /* 검색 영역 */
         .search-box {
@@ -318,24 +412,112 @@
         }
         .pipeline-result.success { background: #e8f5e9; border: 1px solid #4caf50; }
         .pipeline-result.error { background: #fce4ec; border: 1px solid #ef5350; }
+
+        /* 사용자 관리 */
+        .user-mgmt-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        .user-mgmt-table th, .user-mgmt-table td {
+            padding: 10px 12px;
+            border: 1px solid #e8e8e8;
+            text-align: left;
+            font-size: 13px;
+        }
+        .user-mgmt-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        .user-mgmt-table tr:hover { background: #fafafa; }
+        .scope-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .scope-all { background: #e8f5e9; color: #2e7d32; }
+        .scope-self { background: #fff3e0; color: #e65100; }
+        .scope-list { background: #e8f0fe; color: #1a73e8; }
+
+        .add-user-form {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .add-user-form h4 { margin-bottom: 12px; color: #555; }
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .form-row label {
+            font-size: 13px;
+            color: #666;
+            min-width: 80px;
+        }
+        .form-row input, .form-row select {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .form-row input { width: 160px; }
+        .permission-note {
+            background: #fff3e0;
+            border: 1px solid #ffe0b2;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #e65100;
+        }
     </style>
 </head>
 <body>
+
+<!-- 로그인 오버레이 -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+        <h2>연구소 주간업무 RAG 시스템</h2>
+        <p class="login-subtitle">로그인할 사용자를 선택하세요</p>
+        <select id="loginSelect">
+            <option value="">-- 사용자 선택 --</option>
+        </select>
+        <div class="scope-info" id="loginScopeInfo"></div>
+        <button class="login-btn" id="loginBtn" onclick="doLogin()" disabled>로그인</button>
+    </div>
+</div>
 
 <div class="header">
     <div>
         <h1>연구소 주간업무 RAG 시스템</h1>
         <div class="subtitle">LangChain + LangGraph 기반 고급 RAG 파이프라인</div>
     </div>
-    <div class="stats" id="headerStats">로딩중...</div>
+    <div class="header-right">
+        <div class="user-info" id="userInfoDisplay" style="display:none;">
+            <span class="user-name" id="displayUserName"></span>
+            <span class="user-role" id="displayUserRole"></span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;">
+            <div class="stats" id="headerStats">로딩중...</div>
+            <button class="logout-btn" id="logoutBtn" onclick="doLogout()" style="display:none;">로그아웃</button>
+        </div>
+    </div>
 </div>
 
 <div class="container">
-    <div class="tabs">
+    <div class="tabs" id="mainTabs">
         <button class="tab active" onclick="showTab('upload')">PDF 업로드</button>
         <button class="tab" onclick="showTab('search')">검색</button>
         <button class="tab" onclick="showTab('ask')">RAG 질의</button>
         <button class="tab" onclick="showTab('stats')">DB 현황</button>
+        <button class="tab" id="tabUserMgmt" onclick="showTab('usermgmt')" style="display:none;">사용자 관리</button>
     </div>
 
     <!-- 업로드 탭 -->
@@ -344,7 +526,7 @@
             <h3>PDF 파일을 드래그하거나 클릭하여 업로드</h3>
             <p>업로드 즉시 자동으로 텍스트 추출 &rarr; 청킹 &rarr; 임베딩 &rarr; 벡터DB 저장이 수행됩니다</p>
             <div class="upload-form">
-                <input type="text" id="researcherName" placeholder="연구원 이름" />
+                <span class="uploader-name" id="uploaderName">로그인 필요</span>
                 <input type="file" id="fileInput" accept=".pdf" multiple />
                 <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
                     파일 선택
@@ -360,6 +542,7 @@
 
     <!-- 검색 탭 -->
     <div id="tab-search" class="panel">
+        <div id="searchPermNote" class="permission-note" style="display:none;"></div>
         <div class="search-box">
             <input type="text" id="searchQuery" placeholder="검색어를 입력하세요 (예: 이번 주 개발 진행상황)"
                    onkeydown="if(event.key==='Enter')doSearch()" />
@@ -373,6 +556,7 @@
 
     <!-- RAG 질의 탭 -->
     <div id="tab-ask" class="panel">
+        <div id="askPermNote" class="permission-note" style="display:none;"></div>
         <div class="mode-toggle">
             <span style="font-size:13px;color:#888;line-height:36px;margin-right:8px;">RAG 모드:</span>
             <button class="mode-btn active" onclick="setAskMode('basic', this)">기본</button>
@@ -401,16 +585,182 @@
         <h3>처리된 파일 목록</h3>
         <div class="file-list" id="fileList"></div>
     </div>
+
+    <!-- 사용자 관리 탭 (차장 이상만 표시) -->
+    <div id="tab-usermgmt" class="panel">
+        <h3>사용자 관리</h3>
+        <p style="font-size:13px;color:#888;margin:8px 0 16px;">연구원 계정 및 열람 권한을 관리합니다.</p>
+        <div id="userListArea"></div>
+        <div class="add-user-form" id="addUserForm">
+            <h4>새 사용자 추가</h4>
+            <div class="form-row">
+                <label>이름</label>
+                <input type="text" id="newUserName" placeholder="이름 입력" />
+                <label>직급</label>
+                <select id="newUserRole">
+                    <option value="사원">사원</option>
+                    <option value="주임">주임</option>
+                    <option value="과장">과장</option>
+                    <option value="차장">차장</option>
+                    <option value="소장">소장</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>부서</label>
+                <input type="text" id="newUserDept" value="연구소" />
+                <label>열람 범위</label>
+                <select id="newUserScope" onchange="toggleScopeList()">
+                    <option value="self">본인만</option>
+                    <option value="all">전체</option>
+                    <option value="custom">지정 인원</option>
+                </select>
+            </div>
+            <div class="form-row" id="customScopeRow" style="display:none;">
+                <label>열람 대상</label>
+                <input type="text" id="newUserScopeList" placeholder="쉼표로 구분 (예: 이치형,이재원)" style="width:300px;" />
+            </div>
+            <div class="form-row">
+                <label>삭제 권한</label>
+                <select id="newUserCanDelete">
+                    <option value="false">없음</option>
+                    <option value="true">있음</option>
+                </select>
+                <button class="btn btn-primary" onclick="addNewUser()">추가</button>
+            </div>
+            <div id="addUserResult"></div>
+        </div>
+    </div>
 </div>
 
 <script>
+    // ============================================================
+    // 전역 상태
+    // ============================================================
+    let currentUser = null;       // { name, role, department, view_scope, can_delete }
+    let currentPermissions = null; // { viewable_researchers, can_view_all, can_delete }
     let currentAskMode = 'basic';
+
     const modeDescriptions = {
         basic: '기본 RAG: 검색 + LLM 답변 생성',
         langchain: 'LangChain RAG: 구조화된 프롬프트 체인 기반 답변 생성',
         langgraph: 'LangGraph RAG: 쿼리 재작성 &rarr; 검색 &rarr; 문서 그레이딩 &rarr; 답변 생성 &rarr; 환각 검증 (자동 재시도)',
     };
 
+    const roleHierarchy = { '소장': 5, '차장': 4, '과장': 3, '주임': 2, '사원': 1 };
+
+    // ============================================================
+    // 로그인 / 로그아웃
+    // ============================================================
+    async function initLogin() {
+        const select = document.getElementById('loginSelect');
+        try {
+            const resp = await fetch('/api/users');
+            const data = await resp.json();
+            const users = data.users || {};
+            select.innerHTML = '<option value="">-- 사용자 선택 --</option>';
+            for (const [name, info] of Object.entries(users)) {
+                select.innerHTML += `<option value="${name}">${name} (${info.role})</option>`;
+            }
+        } catch(e) {
+            select.innerHTML = '<option value="">사용자 목록 로드 실패</option>';
+        }
+
+        select.addEventListener('change', async function() {
+            const name = this.value;
+            const btn = document.getElementById('loginBtn');
+            const scopeInfo = document.getElementById('loginScopeInfo');
+            if (!name) {
+                btn.disabled = true;
+                scopeInfo.style.display = 'none';
+                return;
+            }
+            btn.disabled = false;
+
+            // 선택한 사용자의 권한 미리 보기
+            try {
+                const resp = await fetch('/api/users/' + encodeURIComponent(name) + '/permissions');
+                const perm = await resp.json();
+                let scopeText = '';
+                if (perm.can_view_all) {
+                    scopeText = '열람 범위: 전체 연구원 보고서 열람 가능';
+                } else if (perm.viewable_researchers) {
+                    scopeText = '열람 범위: ' + perm.viewable_researchers.join(', ') + '의 보고서만 열람 가능';
+                }
+                if (perm.can_delete) scopeText += ' | 파일 삭제 가능';
+                scopeInfo.textContent = scopeText;
+                scopeInfo.style.display = 'block';
+            } catch(e) {
+                scopeInfo.style.display = 'none';
+            }
+        });
+    }
+
+    async function doLogin() {
+        const name = document.getElementById('loginSelect').value;
+        if (!name) return;
+
+        try {
+            const [userResp, permResp] = await Promise.all([
+                fetch('/api/users/' + encodeURIComponent(name)),
+                fetch('/api/users/' + encodeURIComponent(name) + '/permissions'),
+            ]);
+            const userData = await userResp.json();
+            const permData = await permResp.json();
+
+            currentUser = userData.user;
+            currentPermissions = permData;
+
+            // UI 업데이트
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('displayUserName').textContent = currentUser.name;
+            document.getElementById('displayUserRole').textContent = currentUser.role;
+            document.getElementById('userInfoDisplay').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'inline-block';
+            document.getElementById('uploaderName').textContent = currentUser.name + ' (' + currentUser.role + ')';
+
+            // 차장 이상이면 사용자 관리 탭 표시
+            const level = roleHierarchy[currentUser.role] || 0;
+            document.getElementById('tabUserMgmt').style.display = level >= 4 ? 'inline-block' : 'none';
+
+            // 열람 범위 안내 표시
+            updatePermissionNotes();
+            loadResearchers();
+            loadHeaderStats();
+        } catch(e) {
+            alert('로그인 실패: ' + e.message);
+        }
+    }
+
+    function doLogout() {
+        currentUser = null;
+        currentPermissions = null;
+        document.getElementById('loginOverlay').style.display = 'flex';
+        document.getElementById('userInfoDisplay').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'none';
+        document.getElementById('tabUserMgmt').style.display = 'none';
+        initLogin();
+    }
+
+    function updatePermissionNotes() {
+        const searchNote = document.getElementById('searchPermNote');
+        const askNote = document.getElementById('askPermNote');
+
+        if (currentPermissions && !currentPermissions.can_view_all) {
+            const names = (currentPermissions.viewable_researchers || []).join(', ');
+            const msg = '열람 범위 제한: ' + names + '의 보고서만 검색/질의할 수 있습니다.';
+            searchNote.textContent = msg;
+            searchNote.style.display = 'block';
+            askNote.textContent = msg;
+            askNote.style.display = 'block';
+        } else {
+            searchNote.style.display = 'none';
+            askNote.style.display = 'none';
+        }
+    }
+
+    // ============================================================
+    // 탭 전환
+    // ============================================================
     function setAskMode(mode, btn) {
         currentAskMode = mode;
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -418,7 +768,6 @@
         document.getElementById('modeDescription').innerHTML = modeDescriptions[mode];
     }
 
-    // 탭 전환
     function showTab(name) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -426,9 +775,12 @@
         event.target.classList.add('active');
         if (name === 'stats') loadStats();
         if (name === 'search' || name === 'ask') loadResearchers();
+        if (name === 'usermgmt') loadUserManagement();
     }
 
-    // 드래그 앤 드롭
+    // ============================================================
+    // 드래그 앤 드롭 업로드
+    // ============================================================
     const dropZone = document.getElementById('dropZone');
     dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
     dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
@@ -443,9 +795,14 @@
         if (e.target.files.length) uploadFiles(e.target.files);
     });
 
+    // ============================================================
     // 파일 업로드
+    // ============================================================
     async function uploadFiles(files) {
-        const researcher = document.getElementById('researcherName').value || 'unknown';
+        if (!currentUser) {
+            alert('로그인이 필요합니다.');
+            return;
+        }
         const status = document.getElementById('processingStatus');
         const resultDiv = document.getElementById('uploadResult');
         resultDiv.innerHTML = '';
@@ -462,10 +819,15 @@
 
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('researcher', researcher);
+            formData.append('researcher', currentUser.name);
+            formData.append('current_user', currentUser.name);
 
             try {
                 const resp = await fetch('/api/upload', { method: 'POST', body: formData });
+                if (!resp.ok) {
+                    const err = await resp.json();
+                    throw new Error(err.detail || '업로드 실패');
+                }
                 const data = await resp.json();
 
                 if (data.status === 'completed') {
@@ -498,62 +860,80 @@
         loadHeaderStats();
     }
 
-    // 시맨틱 검색
+    // ============================================================
+    // 시맨틱 검색 (권한 기반)
+    // ============================================================
     async function doSearch() {
+        if (!currentUser) { alert('로그인이 필요합니다.'); return; }
         const query = document.getElementById('searchQuery').value;
         if (!query) return;
         const researcher = document.getElementById('searchResearcher').value;
-        const params = new URLSearchParams({ q: query, top_k: 10 });
+        const params = new URLSearchParams({ q: query, top_k: 10, current_user: currentUser.name });
         if (researcher) params.append('researcher', researcher);
 
-        const resp = await fetch('/api/search?' + params);
-        const data = await resp.json();
+        try {
+            const resp = await fetch('/api/search?' + params);
+            if (!resp.ok) {
+                const err = await resp.json();
+                document.getElementById('searchResults').innerHTML =
+                    `<div class="pipeline-result error">${err.detail || '검색 실패'}</div>`;
+                return;
+            }
+            const data = await resp.json();
 
-        const div = document.getElementById('searchResults');
-        if (!data.results.length) {
-            div.innerHTML = '<p style="color:#888;text-align:center;padding:20px;">검색 결과가 없습니다.</p>';
-            return;
-        }
-        div.innerHTML = `<p style="margin-bottom:12px;color:#888;">${data.count}건 검색됨</p>` +
-            data.results.map((r, i) => `
-                <div class="result-card">
-                    <div class="result-meta">
-                        <span class="score">유사도 ${(r.score * 100).toFixed(1)}%</span>
-                        <span>파일: ${r.metadata.file_name}</span>
-                        <span>연구원: ${r.metadata.researcher}</span>
-                        <span>페이지: ${r.metadata.page_num}</span>
+            const div = document.getElementById('searchResults');
+            if (!data.results.length) {
+                div.innerHTML = '<p style="color:#888;text-align:center;padding:20px;">검색 결과가 없습니다.</p>';
+                return;
+            }
+            div.innerHTML = `<p style="margin-bottom:12px;color:#888;">${data.count}건 검색됨</p>` +
+                data.results.map((r, i) => `
+                    <div class="result-card">
+                        <div class="result-meta">
+                            <span class="score">유사도 ${(r.score * 100).toFixed(1)}%</span>
+                            <span>파일: ${r.metadata.file_name}</span>
+                            <span>연구원: ${r.metadata.researcher}</span>
+                            <span>페이지: ${r.metadata.page_num}</span>
+                        </div>
+                        <div class="result-text">${r.text}</div>
                     </div>
-                    <div class="result-text">${r.text}</div>
-                </div>
-            `).join('');
+                `).join('');
+        } catch(err) {
+            document.getElementById('searchResults').innerHTML =
+                `<div class="pipeline-result error">검색 실패: ${err.message}</div>`;
+        }
     }
 
-    // RAG 질의 (모드별)
+    // ============================================================
+    // RAG 질의 (모드별, 권한 기반)
+    // ============================================================
     async function doAsk() {
+        if (!currentUser) { alert('로그인이 필요합니다.'); return; }
         const query = document.getElementById('askQuery').value;
         if (!query) return;
         const researcher = document.getElementById('askResearcher').value;
-        const params = new URLSearchParams({ q: query, top_k: 5 });
+        const params = new URLSearchParams({ q: query, top_k: 5, current_user: currentUser.name });
         if (researcher) params.append('researcher', researcher);
 
         document.getElementById('askAnswer').innerHTML = '<div class="answer-box"><span class="spinner"></span> 답변 생성 중...</div>';
         document.getElementById('askSources').innerHTML = '';
         document.getElementById('askWorkflow').innerHTML = '';
 
-        // 모드별 API 엔드포인트
         let endpoint = '/api/ask';
         if (currentAskMode === 'langchain') endpoint = '/api/ask/langchain';
         if (currentAskMode === 'langgraph') endpoint = '/api/ask/langgraph';
 
         try {
             const resp = await fetch(endpoint + '?' + params);
+            if (!resp.ok) {
+                const err = await resp.json();
+                throw new Error(err.detail || '질의 실패');
+            }
             const data = await resp.json();
 
-            // 답변 표시
             document.getElementById('askAnswer').innerHTML = `
                 <div class="answer-box">${data.answer}</div>`;
 
-            // LangGraph 워크플로우 단계 표시
             if (currentAskMode === 'langgraph' && data.steps) {
                 let workflowHtml = '<div class="workflow-steps"><h4>LangGraph 워크플로우 실행 단계</h4>';
                 data.steps.forEach(step => {
@@ -568,7 +948,6 @@
                 });
                 workflowHtml += '</div>';
 
-                // 메타 배지
                 workflowHtml += '<div class="meta-badges">';
                 if (data.rewritten_query) {
                     workflowHtml += `<span class="badge badge-blue">재작성 쿼리: "${data.rewritten_query}"</span>`;
@@ -585,7 +964,6 @@
                 document.getElementById('askWorkflow').innerHTML = workflowHtml;
             }
 
-            // 출처 표시
             if (data.sources && data.sources.length) {
                 document.getElementById('askSources').innerHTML =
                     `<p style="margin:16px 0 8px;color:#888;font-size:13px;">참조 출처 (${data.sources.length}건)</p>` +
@@ -607,7 +985,9 @@
         }
     }
 
+    // ============================================================
     // 통계 로드
+    // ============================================================
     async function loadStats() {
         const resp = await fetch('/api/stats');
         const data = await resp.json();
@@ -642,19 +1022,35 @@
         }
     }
 
-    // 연구원 목록 로드
+    // ============================================================
+    // 연구원 목록 (권한 기반 필터링)
+    // ============================================================
     async function loadResearchers() {
         try {
             const resp = await fetch('/api/researchers');
             const data = await resp.json();
-            const options = '<option value="">전체 연구원</option>' +
-                Object.keys(data.researchers || {}).map(r => `<option value="${r}">${r}</option>`).join('');
+            let researchers = Object.keys(data.researchers || {});
+
+            // 열람 범위에 따라 선택 가능한 연구원 필터링
+            if (currentPermissions && !currentPermissions.can_view_all && currentPermissions.viewable_researchers) {
+                const viewable = currentPermissions.viewable_researchers;
+                researchers = researchers.filter(r => viewable.includes(r));
+            }
+
+            const canViewAll = currentPermissions && currentPermissions.can_view_all;
+            let options = canViewAll
+                ? '<option value="">전체 연구원</option>'
+                : '<option value="">열람 가능 연구원</option>';
+            options += researchers.map(r => `<option value="${r}">${r}</option>`).join('');
+
             document.getElementById('searchResearcher').innerHTML = options;
             document.getElementById('askResearcher').innerHTML = options;
         } catch(e) {}
     }
 
+    // ============================================================
     // 헤더 통계
+    // ============================================================
     async function loadHeaderStats() {
         try {
             const resp = await fetch('/api/stats');
@@ -664,7 +1060,156 @@
         } catch(e) {}
     }
 
-    // 초기 로드
+    // ============================================================
+    // 사용자 관리
+    // ============================================================
+    async function loadUserManagement() {
+        try {
+            const resp = await fetch('/api/users');
+            const data = await resp.json();
+            const users = data.users || {};
+
+            let html = '<table class="user-mgmt-table"><thead><tr>' +
+                '<th>이름</th><th>직급</th><th>부서</th><th>열람 범위</th><th>삭제 권한</th><th>관리</th>' +
+                '</tr></thead><tbody>';
+
+            for (const [name, info] of Object.entries(users)) {
+                let scopeDisplay = '';
+                const scope = info.view_scope;
+                if (scope === 'all') {
+                    scopeDisplay = '<span class="scope-badge scope-all">전체</span>';
+                } else if (scope === 'self') {
+                    scopeDisplay = '<span class="scope-badge scope-self">본인만</span>';
+                } else if (Array.isArray(scope)) {
+                    scopeDisplay = '<span class="scope-badge scope-list">' + scope.join(', ') + '</span>';
+                } else {
+                    scopeDisplay = '<span class="scope-badge scope-self">' + scope + '</span>';
+                }
+
+                const isCurrentUser = currentUser && name === currentUser.name;
+                const canManage = currentUser && (roleHierarchy[currentUser.role] || 0) >= 4;
+                const canRemove = currentUser && (roleHierarchy[currentUser.role] || 0) >= 5;
+
+                html += `<tr>
+                    <td><strong>${name}</strong>${isCurrentUser ? ' (나)' : ''}</td>
+                    <td>${info.role}</td>
+                    <td>${info.department || '연구소'}</td>
+                    <td>${scopeDisplay}</td>
+                    <td>${info.can_delete ? '<span class="badge badge-green">O</span>' : '<span class="badge badge-red">X</span>'}</td>
+                    <td>
+                        ${canManage ? `<button class="btn btn-secondary btn-small" onclick="editUserPermission('${name}')">권한수정</button>` : ''}
+                        ${canRemove && !isCurrentUser ? ` <button class="btn btn-danger btn-small" onclick="removeUser('${name}')">삭제</button>` : ''}
+                    </td>
+                </tr>`;
+            }
+
+            html += '</tbody></table>';
+            document.getElementById('userListArea').innerHTML = html;
+        } catch(e) {
+            document.getElementById('userListArea').innerHTML =
+                '<div class="pipeline-result error">사용자 목록 로드 실패</div>';
+        }
+    }
+
+    async function editUserPermission(name) {
+        const newScope = prompt(
+            `${name}의 열람 범위를 설정하세요:\n\n` +
+            '- "all": 전체 열람\n' +
+            '- "self": 본인만\n' +
+            '- 쉼표 구분 이름 목록 (예: 이치형,이재원): 지정 인원만\n\n' +
+            '현재 설정을 변경하려면 입력하세요:'
+        );
+        if (newScope === null) return;
+
+        const formData = new FormData();
+        formData.append('view_scope', newScope.trim());
+        formData.append('admin_user', currentUser.name);
+
+        try {
+            const resp = await fetch('/api/users/' + encodeURIComponent(name), {
+                method: 'PUT',
+                body: formData,
+            });
+            if (!resp.ok) {
+                const err = await resp.json();
+                alert('수정 실패: ' + (err.detail || '알 수 없는 오류'));
+                return;
+            }
+            alert('권한이 수정되었습니다.');
+            loadUserManagement();
+        } catch(e) {
+            alert('수정 실패: ' + e.message);
+        }
+    }
+
+    async function removeUser(name) {
+        if (!confirm(`정말 "${name}" 사용자를 삭제하시겠습니까?`)) return;
+
+        try {
+            const resp = await fetch('/api/users/' + encodeURIComponent(name) + '?admin_user=' + encodeURIComponent(currentUser.name), {
+                method: 'DELETE',
+            });
+            if (!resp.ok) {
+                const err = await resp.json();
+                alert('삭제 실패: ' + (err.detail || '알 수 없는 오류'));
+                return;
+            }
+            alert('사용자가 삭제되었습니다.');
+            loadUserManagement();
+        } catch(e) {
+            alert('삭제 실패: ' + e.message);
+        }
+    }
+
+    function toggleScopeList() {
+        const sel = document.getElementById('newUserScope').value;
+        document.getElementById('customScopeRow').style.display = sel === 'custom' ? 'flex' : 'none';
+    }
+
+    async function addNewUser() {
+        const name = document.getElementById('newUserName').value.trim();
+        const role = document.getElementById('newUserRole').value;
+        const dept = document.getElementById('newUserDept').value.trim() || '연구소';
+        const scopeSel = document.getElementById('newUserScope').value;
+        const canDelete = document.getElementById('newUserCanDelete').value === 'true';
+
+        if (!name) { alert('이름을 입력하세요.'); return; }
+
+        let viewScope = scopeSel;
+        if (scopeSel === 'custom') {
+            viewScope = document.getElementById('newUserScopeList').value.trim();
+            if (!viewScope) { alert('열람 대상을 입력하세요.'); return; }
+        }
+
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('role', role);
+        formData.append('department', dept);
+        formData.append('view_scope', viewScope);
+        formData.append('can_delete', canDelete);
+        formData.append('admin_user', currentUser.name);
+
+        const resultDiv = document.getElementById('addUserResult');
+        try {
+            const resp = await fetch('/api/users', { method: 'POST', body: formData });
+            if (!resp.ok) {
+                const err = await resp.json();
+                resultDiv.innerHTML = `<div class="pipeline-result error">${err.detail || '추가 실패'}</div>`;
+                return;
+            }
+            const data = await resp.json();
+            resultDiv.innerHTML = `<div class="pipeline-result success">${data.message}</div>`;
+            document.getElementById('newUserName').value = '';
+            loadUserManagement();
+        } catch(e) {
+            resultDiv.innerHTML = `<div class="pipeline-result error">추가 실패: ${e.message}</div>`;
+        }
+    }
+
+    // ============================================================
+    // 초기화
+    // ============================================================
+    initLogin();
     loadHeaderStats();
 </script>
 </body>
