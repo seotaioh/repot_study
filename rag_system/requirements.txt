@@ -1,14 +1,21 @@
 # ============================================================
 # RAG System - 연구소 주간업무 보고서 검색 시스템
+# LangChain + LangGraph 기반 고급 RAG 파이프라인
 # ============================================================
 
 # PDF 파싱
 pdfplumber>=0.10.0
 pymupdf>=1.23.0
 
-# 텍스트 처리 / 청킹
-langchain>=0.1.0
-langchain-community>=0.0.20
+# ============================================================
+# LangChain / LangGraph 핵심
+# ============================================================
+langchain>=0.3.0
+langchain-core>=0.3.0
+langchain-community>=0.3.0
+langchain-openai>=0.2.0
+langchain-text-splitters>=0.3.0
+langgraph>=0.2.0
 
 # 임베딩 (한국어 다국어 지원)
 sentence-transformers>=2.6.0
@@ -17,9 +24,8 @@ torch>=2.0.0
 # 벡터 DB
 chromadb>=0.4.22
 
-# LLM / 생성 (선택: OpenAI 또는 로컬)
+# LLM / 생성
 openai>=1.12.0
-# transformers>=4.38.0   # 로컬 LLM 사용 시 활성화
 
 # API 배포
 fastapi>=0.110.0

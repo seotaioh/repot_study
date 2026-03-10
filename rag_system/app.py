@@ -2,7 +2,8 @@
 Step 6: FastAPI 배포 앱
 - PDF 업로드 → 자동 파이프라인 (추출 → 청킹 → 임베딩 → 벡터DB)
 - 연구원별 데이터 누적 관리
-- 시맨틱 검색 / RAG 질의 API
+- 시맨틱 검색 / RAG 질의 API (기본 + LangChain + LangGraph)
+- LangGraph 기반 고급 RAG: 쿼리 재작성, 문서 그레이딩, 환각 검증
 - 파일 관리 (목록, 삭제)
 """
 import os
@@ -26,6 +27,8 @@ from chunking import chunk_extracted_data
 from embed_store import vector_store
 from search import search
 from rag_query import rag_query
+from rag_chain import langchain_rag_query
+from rag_graph import langgraph_rag_query, langgraph_rag_stream
 
 
 # ============================================================
@@ -159,8 +162,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="연구소 주간업무 RAG 시스템",
-    description="PDF 보고서 업로드 → 자동 청킹/임베딩 → 시맨틱 검색 & RAG 질의",
-    version="1.0.0",
+    description="PDF 보고서 업로드 → 자동 청킹/임베딩 → 시맨틱 검색 & LangChain/LangGraph RAG 질의",
+    version="2.0.0",
     lifespan=lifespan,
 )
 
@@ -223,8 +226,40 @@ async def api_ask(
     top_k: int = Query(5, ge=1, le=20),
     researcher: str = Query(None, description="연구원 필터"),
 ):
-    """RAG 질의 (검색 + LLM 답변 생성)"""
+    """RAG 질의 - 기본 모드 (검색 + LLM 답변 생성)"""
     result = rag_query(q, top_k=top_k, researcher=researcher)
+    return result
+
+
+@app.get("/api/ask/langchain")
+async def api_ask_langchain(
+    q: str = Query(..., description="질문"),
+    top_k: int = Query(5, ge=1, le=20),
+    researcher: str = Query(None, description="연구원 필터"),
+):
+    """LangChain 기반 RAG 질의 (구조화된 프롬프트 체인)"""
+    result = langchain_rag_query(q, top_k=top_k, researcher=researcher)
+    return result
+
+
+@app.get("/api/ask/langgraph")
+async def api_ask_langgraph(
+    q: str = Query(..., description="질문"),
+    top_k: int = Query(5, ge=1, le=20),
+    researcher: str = Query(None, description="연구원 필터"),
+):
+    """
+    LangGraph 기반 고급 RAG 질의
+
+    워크플로우:
+    1. 쿼리 분석 및 재작성
+    2. 벡터 검색
+    3. 문서 관련성 평가 (LLM 기반 그레이딩)
+    4. 답변 생성
+    5. 환각 검증
+    6. (필요 시) 자동 쿼리 재작성 / 재생성
+    """
+    result = langgraph_rag_query(q, top_k=top_k, researcher=researcher)
     return result
 
 

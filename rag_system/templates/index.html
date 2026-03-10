@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>연구소 주간업무 RAG 시스템</title>
+    <title>연구소 주간업무 RAG 시스템 (LangGraph)</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -20,6 +20,7 @@
             align-items: center;
         }
         .header h1 { font-size: 22px; }
+        .header .subtitle { font-size: 12px; opacity: 0.8; margin-top: 2px; }
         .header .stats {
             font-size: 13px;
             opacity: 0.9;
@@ -33,6 +34,7 @@
             display: flex;
             gap: 4px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         .tab {
             padding: 10px 24px;
@@ -108,9 +110,11 @@
             display: flex;
             gap: 12px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         .search-box input {
             flex: 1;
+            min-width: 200px;
             padding: 12px 20px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
@@ -125,6 +129,31 @@
             border-radius: 8px;
             font-size: 14px;
         }
+
+        /* 모드 토글 */
+        .mode-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .mode-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            background: white;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .mode-btn.active {
+            border-color: #1a73e8;
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+        .mode-btn:hover { border-color: #1a73e8; }
 
         /* 결과 카드 */
         .results { margin-top: 16px; }
@@ -142,6 +171,7 @@
             font-size: 12px;
             color: #888;
             margin-bottom: 8px;
+            flex-wrap: wrap;
         }
         .result-meta .score {
             background: #e8f0fe;
@@ -167,6 +197,60 @@
             white-space: pre-wrap;
             font-size: 14px;
         }
+
+        /* 워크플로우 단계 */
+        .workflow-steps {
+            background: #fafafa;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        .workflow-steps h4 {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 13px;
+            color: #555;
+        }
+        .step-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4caf50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+        .step-icon.warn { background: #ff9800; }
+        .step-icon.error { background: #ef5350; }
+
+        /* 메타 배지 */
+        .meta-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-blue { background: #e8f0fe; color: #1a73e8; }
+        .badge-green { background: #e8f5e9; color: #2e7d32; }
+        .badge-orange { background: #fff3e0; color: #e65100; }
+        .badge-red { background: #fce4ec; color: #c62828; }
 
         /* 통계 */
         .stats-grid {
@@ -234,19 +318,15 @@
         }
         .pipeline-result.success { background: #e8f5e9; border: 1px solid #4caf50; }
         .pipeline-result.error { background: #fce4ec; border: 1px solid #ef5350; }
-
-        .mode-toggle {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .mode-toggle .btn.active { background: #1a73e8; color: white; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>연구소 주간업무 RAG 시스템</h1>
+    <div>
+        <h1>연구소 주간업무 RAG 시스템</h1>
+        <div class="subtitle">LangChain + LangGraph 기반 고급 RAG 파이프라인</div>
+    </div>
     <div class="stats" id="headerStats">로딩중...</div>
 </div>
 
@@ -262,7 +342,7 @@
     <div id="tab-upload" class="panel active">
         <div class="upload-zone" id="dropZone">
             <h3>PDF 파일을 드래그하거나 클릭하여 업로드</h3>
-            <p>업로드 즉시 자동으로 텍스트 추출 → 청킹 → 임베딩 → 벡터DB 저장이 수행됩니다</p>
+            <p>업로드 즉시 자동으로 텍스트 추출 &rarr; 청킹 &rarr; 임베딩 &rarr; 벡터DB 저장이 수행됩니다</p>
             <div class="upload-form">
                 <input type="text" id="researcherName" placeholder="연구원 이름" />
                 <input type="file" id="fileInput" accept=".pdf" multiple />
@@ -293,6 +373,15 @@
 
     <!-- RAG 질의 탭 -->
     <div id="tab-ask" class="panel">
+        <div class="mode-toggle">
+            <span style="font-size:13px;color:#888;line-height:36px;margin-right:8px;">RAG 모드:</span>
+            <button class="mode-btn active" onclick="setAskMode('basic', this)">기본</button>
+            <button class="mode-btn" onclick="setAskMode('langchain', this)">LangChain</button>
+            <button class="mode-btn" onclick="setAskMode('langgraph', this)">LangGraph (고급)</button>
+        </div>
+        <div id="modeDescription" style="font-size:12px;color:#aaa;margin-bottom:12px;">
+            기본 RAG: 검색 + LLM 답변 생성
+        </div>
         <div class="search-box">
             <input type="text" id="askQuery" placeholder="질문을 입력하세요 (예: 이번 주 주요 이슈는 무엇인가요?)"
                    onkeydown="if(event.key==='Enter')doAsk()" />
@@ -302,6 +391,7 @@
             <button class="btn btn-primary" onclick="doAsk()">질문하기</button>
         </div>
         <div id="askAnswer"></div>
+        <div id="askWorkflow"></div>
         <div class="results" id="askSources"></div>
     </div>
 
@@ -314,6 +404,20 @@
 </div>
 
 <script>
+    let currentAskMode = 'basic';
+    const modeDescriptions = {
+        basic: '기본 RAG: 검색 + LLM 답변 생성',
+        langchain: 'LangChain RAG: 구조화된 프롬프트 체인 기반 답변 생성',
+        langgraph: 'LangGraph RAG: 쿼리 재작성 &rarr; 검색 &rarr; 문서 그레이딩 &rarr; 답변 생성 &rarr; 환각 검증 (자동 재시도)',
+    };
+
+    function setAskMode(mode, btn) {
+        currentAskMode = mode;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('modeDescription').innerHTML = modeDescriptions[mode];
+    }
+
     // 탭 전환
     function showTab(name) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -424,7 +528,7 @@
             `).join('');
     }
 
-    // RAG 질의
+    // RAG 질의 (모드별)
     async function doAsk() {
         const query = document.getElementById('askQuery').value;
         if (!query) return;
@@ -434,27 +538,72 @@
 
         document.getElementById('askAnswer').innerHTML = '<div class="answer-box"><span class="spinner"></span> 답변 생성 중...</div>';
         document.getElementById('askSources').innerHTML = '';
+        document.getElementById('askWorkflow').innerHTML = '';
 
-        const resp = await fetch('/api/ask?' + params);
-        const data = await resp.json();
+        // 모드별 API 엔드포인트
+        let endpoint = '/api/ask';
+        if (currentAskMode === 'langchain') endpoint = '/api/ask/langchain';
+        if (currentAskMode === 'langgraph') endpoint = '/api/ask/langgraph';
 
-        document.getElementById('askAnswer').innerHTML = `
-            <div class="answer-box">${data.answer}</div>`;
+        try {
+            const resp = await fetch(endpoint + '?' + params);
+            const data = await resp.json();
 
-        if (data.sources.length) {
-            document.getElementById('askSources').innerHTML =
-                `<p style="margin:16px 0 8px;color:#888;font-size:13px;">참조 출처 (${data.sources.length}건)</p>` +
-                data.sources.map(s => `
-                    <div class="result-card">
-                        <div class="result-meta">
-                            <span class="score">${(s.score * 100).toFixed(1)}%</span>
-                            <span>${s.file_name}</span>
-                            <span>${s.researcher}</span>
-                            <span>p.${s.page_num}</span>
+            // 답변 표시
+            document.getElementById('askAnswer').innerHTML = `
+                <div class="answer-box">${data.answer}</div>`;
+
+            // LangGraph 워크플로우 단계 표시
+            if (currentAskMode === 'langgraph' && data.steps) {
+                let workflowHtml = '<div class="workflow-steps"><h4>LangGraph 워크플로우 실행 단계</h4>';
+                data.steps.forEach(step => {
+                    let iconClass = '';
+                    if (step.includes('실패') || step.includes('hallucinated')) iconClass = 'error';
+                    else if (step.includes('스킵') || step.includes('재작성')) iconClass = 'warn';
+                    workflowHtml += `
+                        <div class="step-item">
+                            <div class="step-icon ${iconClass}">${iconClass === 'error' ? '!' : iconClass === 'warn' ? '~' : '&#10003;'}</div>
+                            <span>${step}</span>
+                        </div>`;
+                });
+                workflowHtml += '</div>';
+
+                // 메타 배지
+                workflowHtml += '<div class="meta-badges">';
+                if (data.rewritten_query) {
+                    workflowHtml += `<span class="badge badge-blue">재작성 쿼리: "${data.rewritten_query}"</span>`;
+                }
+                workflowHtml += `<span class="badge badge-blue">쿼리 재작성: ${data.rewrite_count || 0}회</span>`;
+                workflowHtml += `<span class="badge badge-blue">답변 생성: ${data.generation_count || 0}회</span>`;
+                if (data.is_grounded !== undefined) {
+                    workflowHtml += data.is_grounded
+                        ? '<span class="badge badge-green">환각 검증: 통과</span>'
+                        : '<span class="badge badge-red">환각 검증: 실패</span>';
+                }
+                workflowHtml += '</div>';
+
+                document.getElementById('askWorkflow').innerHTML = workflowHtml;
+            }
+
+            // 출처 표시
+            if (data.sources && data.sources.length) {
+                document.getElementById('askSources').innerHTML =
+                    `<p style="margin:16px 0 8px;color:#888;font-size:13px;">참조 출처 (${data.sources.length}건)</p>` +
+                    data.sources.map(s => `
+                        <div class="result-card">
+                            <div class="result-meta">
+                                <span class="score">${(s.score * 100).toFixed(1)}%</span>
+                                <span>${s.file_name}</span>
+                                <span>${s.researcher}</span>
+                                <span>p.${s.page_num}</span>
+                            </div>
+                            <div class="result-text">${s.snippet}...</div>
                         </div>
-                        <div class="result-text">${s.snippet}...</div>
-                    </div>
-                `).join('');
+                    `).join('');
+            }
+        } catch (err) {
+            document.getElementById('askAnswer').innerHTML = `
+                <div class="pipeline-result error">질의 실패: ${err.message}</div>`;
         }
     }
 
