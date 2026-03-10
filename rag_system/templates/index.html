@@ -653,16 +653,28 @@
     // ============================================================
     async function initLogin() {
         const select = document.getElementById('loginSelect');
-        try {
-            const resp = await fetch('/api/users');
-            const data = await resp.json();
-            const users = data.users || {};
-            select.innerHTML = '<option value="">-- 사용자 선택 --</option>';
-            for (const [name, info] of Object.entries(users)) {
-                select.innerHTML += `<option value="${name}">${name} (${info.role})</option>`;
+        let loaded = false;
+
+        // 서버 시작 시 로딩 지연 대비 재시도
+        for (let attempt = 0; attempt < 3 && !loaded; attempt++) {
+            try {
+                if (attempt > 0) await new Promise(r => setTimeout(r, 1000));
+                const resp = await fetch('/api/users');
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json();
+                const users = data.users || {};
+                let options = '<option value="">-- 사용자 선택 --</option>';
+                for (const [name, info] of Object.entries(users)) {
+                    options += `<option value="${name}">${name} (${info.role})</option>`;
+                }
+                select.innerHTML = options;
+                loaded = true;
+            } catch(e) {
+                console.warn('사용자 목록 로드 시도 ' + (attempt+1) + ' 실패:', e);
+                if (attempt === 2) {
+                    select.innerHTML = '<option value="">사용자 목록 로드 실패 - 새로고침 해주세요</option>';
+                }
             }
-        } catch(e) {
-            select.innerHTML = '<option value="">사용자 목록 로드 실패</option>';
         }
 
         select.addEventListener('change', async function() {
