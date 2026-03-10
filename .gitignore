@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# 환경 / 비밀
+.env
+*.env
+.venv/
+venv/
+
+# 벡터DB (로컬 생성 데이터)
+db/
+
+# 추출/청크 데이터 (로컬 생성)
+data/extracted/
+data/chunks/
+data/uploads/
+data/processed_files.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 모델 캐시
+.cache/
